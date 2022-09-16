@@ -39,6 +39,9 @@ client.connect((err) => {
   const questionCollection = client
     .db(`${process.env.DB_FILE}`)
     .collection("allQuestion");
+  const modelQsCollection = client
+    .db(`${process.env.DB_FILE}`)
+    .collection("modelQuestion");
   const teacherCollection = client
     .db(`${process.env.DB_FILE}`)
     .collection("allTeacher");
@@ -245,6 +248,26 @@ client.connect((err) => {
       res.status(201).json({
         status: "success",
       });
+    });
+  });
+  app.post("/addquestionModel", (req, res) => {
+    const data = req.body;
+
+    if (!data?.question)
+      return res.status(404).json({
+        status: false,
+        message: "no question found",
+      });
+
+    modelQsCollection.insertOne({ data }).then((result) => {
+      res.status(201).json({
+        status: "success",
+      });
+    });
+  });
+  app.get("/questionsModel", (req, res) => {
+    modelQsCollection.find({}).toArray((err, documents) => {
+      res.send(documents);
     });
   });
   app.get("/questions", (req, res) => {
